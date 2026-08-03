@@ -118,6 +118,16 @@
   .cta-band h2 { font-size: 1.9rem; font-weight: 800; margin-bottom: 14px; }
   .cta-band p { color: var(--muted); max-width: 520px; margin: 0 auto 28px; }
 
+  .contact-form {
+    max-width: 460px; margin: 0 auto; text-align: left; display: flex; flex-direction: column; gap: 12px;
+  }
+  .contact-form input, .contact-form textarea {
+    width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--bg); color: var(--text); font-size: .92rem; font-family: inherit; resize: vertical;
+  }
+  .contact-form input:focus, .contact-form textarea:focus { outline: none; border-color: var(--cyan); }
+  .contact-form input::placeholder, .contact-form textarea::placeholder { color: var(--muted); }
+
   footer { border-top: 1px solid var(--border); padding: 36px 24px; text-align: center; color: var(--muted); font-size: .82rem; }
   footer .brand { justify-content: center; margin-bottom: 10px; }
 
@@ -317,9 +327,16 @@
   <div class="wrap">
     <div class="cta-band">
       <h2>Porta l'intelligenza artificiale nella tua sicurezza</h2>
-      <p>Richiedi una demo personalizzata sulle tue camere, o scarica la brochure con tutti i dettagli tecnici e commerciali.</p>
-      <div class="cta-row">
-        <a class="btn btn-primary" href="mailto:info@glauxai.example">Richiedi una demo</a>
+      <p>Richiedi una demo personalizzata sulle tue camere: scrivi un messaggio, si aprirà il tuo programma di posta già pronto per l'invio.</p>
+
+      <form id="demo-form" class="contact-form" onsubmit="return sendDemoRequest(event)">
+        <input type="text" id="demo-name" placeholder="Nome" required/>
+        <input type="email" id="demo-email" placeholder="La tua email" required/>
+        <textarea id="demo-message" rows="4" placeholder="Raccontaci il tuo contesto (negozio, casa, struttura...) e cosa vorresti proteggere" required></textarea>
+        <button type="submit" class="btn btn-primary" style="width:100%">Invia richiesta</button>
+      </form>
+
+      <div class="cta-row" style="margin-top:18px">
         <a class="btn btn-outline" href="brochure.pdf" target="_blank">Scarica la brochure (PDF)</a>
       </div>
     </div>
@@ -334,6 +351,31 @@
   </div>
 </footer>
 
-<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// Indirizzo destinatario mascherato (char code, non in chiaro nel sorgente):
+// protegge dai bot che raccolgono indirizzi email scansionando le pagine.
+// Decodificato solo al momento dell'invio del form.
+const _EU = [109, 114, 109, 105, 107, 121];                    // mrmiky
+const _ED = [103, 109, 97, 105, 108, 46, 99, 111, 109];         // gmail.com
+function _demoRecipient() {
+  return String.fromCharCode(..._EU) + '@' + String.fromCharCode(..._ED);
+}
+
+function sendDemoRequest(evt) {
+  evt.preventDefault();
+  const name    = document.getElementById('demo-name').value.trim();
+  const email   = document.getElementById('demo-email').value.trim();
+  const message = document.getElementById('demo-message').value.trim();
+
+  const subject = 'Richiesta demo GLAUX AI' + (name ? ' — ' + name : '');
+  const body = `Nome: ${name}\nEmail: ${email}\n\n${message}`;
+  const mailto = `mailto:${_demoRecipient()}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+  window.location.href = mailto;
+  return false;
+}
+</script>
 </body>
 </html>

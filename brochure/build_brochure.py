@@ -290,7 +290,7 @@ def make_pdf():
     c.drawCentredString(W/2, cta_y + cta_h - 15*mm, "Richiedi una demo personalizzata sulle tue camere.")
     c.setFillColor(CYAN)
     c.setFont("Helvetica-Bold", 10)
-    c.drawCentredString(W/2, cta_y + cta_h - 22*mm, "info@glauxai.example")
+    c.drawCentredString(W/2, cta_y + cta_h - 22*mm, "www.glauxai.it")
 
     footer(c, "3 / 3")
     c.showPage()

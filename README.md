@@ -12,7 +12,7 @@ Sito statico a singola pagina per presentare GLAUX AI. Nessun build step: è pur
 
 ## Prima di pubblicare
 
-- Sostituisci l'indirizzo email placeholder `info@glauxai.example` nei pulsanti "Richiedi una demo" con un contatto reale (cerca `mailto:` in `index.html`).
+- Il form "Richiedi una demo" invia a un indirizzo mascherato nel sorgente di `index.html` (cerca `_EU`/`_ED` in fondo al file) — apre il client di posta del visitatore, non è un invio silenzioso lato server. Se in futuro vuoi l'invio automatico senza aprire il client di posta, serve un servizio come Formspree (richiede un account gratuito).
 - Copia il PDF della brochure (vedi cartella `brochure/`) come `brochure.pdf` in questa stessa cartella — i link "Scarica la brochure" puntano a `brochure.pdf` accanto a `index.html`.
 - Se pubblichi in una sottocartella (es. repo che non è `<utente>.github.io`), verifica che i percorsi relativi (`assets/...`, `brochure.pdf`) restino corretti.
 
