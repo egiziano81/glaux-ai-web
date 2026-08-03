@@ -12,7 +12,12 @@ Sito statico a singola pagina per presentare GLAUX AI. Nessun build step: è pur
 
 ## Prima di pubblicare
 
-- Il form "Richiedi una demo" invia a un indirizzo mascherato nel sorgente di `index.html` (cerca `_EU`/`_ED` in fondo al file) — apre il client di posta del visitatore, non è un invio silenzioso lato server. Se in futuro vuoi l'invio automatico senza aprire il client di posta, serve un servizio come Formspree (richiede un account gratuito).
+- **Collega il form "Richiedi una demo" a Formspree** (invio silenzioso, l'email di destinazione non è mai nel sorgente):
+  1. Vai su [formspree.io](https://formspree.io) e crea un account gratuito (piano free: 50 invii/mese, form illimitati, nessuna carta di credito richiesta).
+  2. Nella dashboard: **+ Add New → New Form**, imposta come destinatario l'email che vuoi ricevere (es. la tua).
+  3. Copia l'endpoint del form, tipo `https://formspree.io/f/abcdwxyz`.
+  4. In `index.html`, cerca la costante `FORMSPREE_ENDPOINT` (in fondo al file) e sostituisci `https://formspree.io/f/XXXXXXX` con il tuo endpoint.
+  5. Pubblica il sito, poi fai un invio di prova dal form: la prima volta Formspree potrebbe chiederti di confermare il form dalla dashboard prima che i messaggi arrivino davvero.
 - Copia il PDF della brochure (vedi cartella `brochure/`) come `brochure.pdf` in questa stessa cartella — i link "Scarica la brochure" puntano a `brochure.pdf` accanto a `index.html`.
 - Se pubblichi in una sottocartella (es. repo che non è `<utente>.github.io`), verifica che i percorsi relativi (`assets/...`, `brochure.pdf`) restino corretti.
 

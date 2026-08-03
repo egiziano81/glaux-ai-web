@@ -127,6 +127,10 @@
   }
   .contact-form input:focus, .contact-form textarea:focus { outline: none; border-color: var(--cyan); }
   .contact-form input::placeholder, .contact-form textarea::placeholder { color: var(--muted); }
+  .form-status { font-size: .85rem; min-height: 1.2em; }
+  .form-status.ok { color: var(--green); }
+  .form-status.err { color: var(--red); }
+  .btn:disabled { opacity: .6; cursor: not-allowed; }
 
   footer { border-top: 1px solid var(--border); padding: 36px 24px; text-align: center; color: var(--muted); font-size: .82rem; }
   footer .brand { justify-content: center; margin-bottom: 10px; }
@@ -327,13 +331,14 @@
   <div class="wrap">
     <div class="cta-band">
       <h2>Porta l'intelligenza artificiale nella tua sicurezza</h2>
-      <p>Richiedi una demo personalizzata sulle tue camere: scrivi un messaggio, si aprirà il tuo programma di posta già pronto per l'invio.</p>
+      <p>Richiedi una demo personalizzata sulle tue camere: scrivi un messaggio, ti risponderemo il prima possibile.</p>
 
       <form id="demo-form" class="contact-form" onsubmit="return sendDemoRequest(event)">
-        <input type="text" id="demo-name" placeholder="Nome" required/>
-        <input type="email" id="demo-email" placeholder="La tua email" required/>
-        <textarea id="demo-message" rows="4" placeholder="Raccontaci il tuo contesto (negozio, casa, struttura...) e cosa vorresti proteggere" required></textarea>
-        <button type="submit" class="btn btn-primary" style="width:100%">Invia richiesta</button>
+        <input type="text" id="demo-name" name="name" placeholder="Nome" required/>
+        <input type="email" id="demo-email" name="email" placeholder="La tua email" required/>
+        <textarea id="demo-message" name="message" rows="4" placeholder="Raccontaci il tuo contesto (negozio, casa, struttura...) e cosa vorresti proteggere" required></textarea>
+        <button type="submit" id="demo-submit" class="btn btn-primary" style="width:100%">Invia richiesta</button>
+        <div id="demo-status" class="form-status"></div>
       </form>
 
       <div class="cta-row" style="margin-top:18px">
@@ -354,26 +359,43 @@
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
 
-// Indirizzo destinatario mascherato (char code, non in chiaro nel sorgente):
-// protegge dai bot che raccolgono indirizzi email scansionando le pagine.
-// Decodificato solo al momento dell'invio del form.
-const _EU = [109, 114, 109, 105, 107, 121];                    // mrmiky
-const _ED = [103, 109, 97, 105, 108, 46, 99, 111, 109];         // gmail.com
-function _demoRecipient() {
-  return String.fromCharCode(..._EU) + '@' + String.fromCharCode(..._ED);
-}
+// Invio silenzioso via Formspree (piano gratuito: 50 invii/mese) — l'indirizzo
+// email di destinazione NON è mai nel sorgente: è configurato solo lato
+// Formspree, associato a questo endpoint. Sostituisci XXXXXXX con il tuo
+// form ID (Formspree → dashboard → il tuo form → "Your form's endpoint").
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xgogglkv';
 
-function sendDemoRequest(evt) {
+async function sendDemoRequest(evt) {
   evt.preventDefault();
-  const name    = document.getElementById('demo-name').value.trim();
-  const email   = document.getElementById('demo-email').value.trim();
-  const message = document.getElementById('demo-message').value.trim();
+  const btn    = document.getElementById('demo-submit');
+  const status = document.getElementById('demo-status');
+  const form   = document.getElementById('demo-form');
 
-  const subject = 'Richiesta demo GLAUX AI' + (name ? ' — ' + name : '');
-  const body = `Nome: ${name}\nEmail: ${email}\n\n${message}`;
-  const mailto = `mailto:${_demoRecipient()}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  status.className = 'form-status';
+  status.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'Invio in corso...';
 
-  window.location.href = mailto;
+  try {
+    const resp = await fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' },
+      body: new FormData(form),
+    });
+    if (resp.ok) {
+      status.className = 'form-status ok';
+      status.textContent = 'Messaggio inviato — ti risponderemo il prima possibile.';
+      form.reset();
+    } else {
+      throw new Error('invio non riuscito');
+    }
+  } catch (e) {
+    status.className = 'form-status err';
+    status.textContent = 'Invio non riuscito. Riprova, oppure scrivici a mano.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Invia richiesta';
+  }
   return false;
 }
 </script>
