@@ -126,16 +126,16 @@ def make_pdf():
 
     c.setFillColor(MUTED)
     c.setFont("Helvetica", 10.5)
-    lead = ("Sistema di videosorveglianza intelligente, multi-modalita, 100% offline: rileva rapine, "
-            "intrusioni, cadute, incendi e situazioni di pericolo in tempo reale, elaborando tutto "
-            "localmente e accelerando l'analisi via GPU.")
+    lead = ("Sistema di videosorveglianza intelligente, multi-modalita: rileva rapine, intrusioni, "
+            "cadute, incendi e situazioni di pericolo in tempo reale, elaborando l'analisi video "
+            "direttamente in locale e accelerandola via GPU.")
     yy -= 4 * mm
     for ln in wrap_text(lead, "Helvetica", 10.5, W - 2*MX - 30*mm):
         c.drawCentredString(W / 2, yy, ln)
         yy -= 5.4 * mm
 
     # pill badges
-    badges = ["AI on-device", "Accelerazione GPU", "Nessun video nel cloud", "Auto-ritaratura"]
+    badges = ["AI on-device", "Accelerazione GPU", "Elaborazione in locale", "Auto-ritaratura"]
     total_w = sum(stringWidth(b, "Helvetica-Bold", 8.5) + 6.4*mm for b in badges) + (len(badges)-1)*3*mm
     bx = W/2 - total_w/2
     by = yy - 10*mm
@@ -143,10 +143,17 @@ def make_pdf():
         bw = draw_pill(c, bx, by, b)
         bx += bw + 3*mm
 
+    # Fascia "ideale per" — anticipa la pagina dedicata ai casi d'uso
+    c.setFillColor(MUTED)
+    c.setFont("Helvetica", 8.3)
+    ideale_y = by - 12 * mm
+    c.drawCentredString(W / 2, ideale_y, "Ideale per: negozi e attivita commerciali  ·  abitazioni private")
+    c.drawCentredString(W / 2, ideale_y - 5 * mm, "strutture per anziani e assistenza domiciliare  ·  nidi e scuole dell'infanzia")
+
     c.setFillColor(MUTED)
     c.setFont("Helvetica", 8.5)
     c.drawCentredString(W / 2, 20 * mm, "Brochure commerciale")
-    footer(c, "1 / 3")
+    footer(c, "1 / 4")
     c.showPage()
 
     # ---------------- PAGE 2 — Modalita operative ----------------
@@ -167,42 +174,48 @@ def make_pdf():
             "Riconoscimento azioni violente (pose/scheletro)",
             "Riconoscimento vocale delle minacce (italiano)",
             "Verifica con AI esterna prima dell'allarme",
+            "Utile per: negozi, farmacie, sportelli bancomat",
         ]),
         ("#", "Anti-intrusione", BLUE, [
             "Ritardo di armamento configurabile",
             "PIN di sicurezza per armare/disarmare",
             "Ritardo prima dell'invio dell'allarme",
             "Filtro anti-falsi-positivi (quadri, poster, foto)",
+            "Utile per: abitazioni, uffici e magazzini fuori orario",
         ]),
         ("+", "Vigilanza anziani", CYAN, [
             "Rilevamento cadute e immobilita prolungata",
             "Riconoscimento gesti di richiesta d'aiuto",
             "Rilevamento movimento agitato (panico)",
             "Fusione con l'audio (grida, malore)",
+            "Utile per: anziani che vivono da soli, RSA",
         ]),
         ("*", "Baby monitor", BLUE, [
             "Caduta o immobilita prolungata",
             "Uscita dall'inquadratura (culla/stanza)",
             "Vicinanza ad acqua o fiamme",
             "Pianto rilevato acusticamente",
+            "Utile per: nidi, scuole dell'infanzia, tate",
         ]),
         ("^", "Anti-incendio", CYAN, [
             "Analisi colore (YCrCb + HSV) anti-falsi-positivi",
             "Modello AI dedicato fuoco/fumo",
             "Abbinabile a qualsiasi altra modalita",
             "Auto-ritaratura sulla sensibilita",
+            "Utile per: qualsiasi ambiente con rischio fiamme",
         ]),
         ("=", "Controllo totale", BLUE, [
             "Dashboard web multi-camera in tempo reale",
             "Accesso protetto da password",
             "Storico eventi esportabile (Excel)",
             "Interruttore generale: nessun alert quando non serve",
+            "Utile per: gestione di piu sedi o camere insieme",
         ]),
     ]
 
     col_w = (W - 2 * MX - 8 * mm) / 2
-    card_h = 46 * mm
-    gap_y = 6 * mm
+    card_h = 56 * mm
+    gap_y = 7 * mm
     top = H - 44 * mm
     for i, (icon, title, accent, body) in enumerate(modes):
         col = i % 2
@@ -211,10 +224,78 @@ def make_pdf():
         y = top - card_h - row * (card_h + gap_y)
         card(c, x, y, col_w, card_h, title, body, icon=icon, accent=accent, title_size=11.5, body_size=8.4)
 
-    footer(c, "2 / 3")
+    # Nota informativa nello spazio restante in fondo alla pagina
+    note_y = top - 3 * card_h - 2 * gap_y - 14 * mm
+    c.setFillColor(SURFACE2)
+    c.setStrokeColor(BORDER)
+    c.roundRect(MX, note_y, W - 2 * MX, 10 * mm, 2 * mm, fill=1, stroke=1)
+    c.setFillColor(CYAN)
+    c.setFont("Helvetica-Bold", 8.6)
+    c.drawCentredString(W / 2, note_y + 3.6 * mm,
+                         "L'anti-incendio e abbinabile a QUALSIASI altra modalita, senza mai escluderla.")
+
+    footer(c, "2 / 4")
     c.showPage()
 
-    # ---------------- PAGE 3 — Perche + Come funziona + Contatti ----------------
+    # ---------------- PAGE 3 — Casi d'uso ----------------
+    bg_fill(c)
+    c.setFillColor(CYAN)
+    c.setFont("Helvetica-Bold", 9)
+    c.drawString(MX, H - 22 * mm, "CASI D'USO")
+    c.setFillColor(colors.white)
+    c.setFont("Helvetica-Bold", 20)
+    c.drawString(MX, H - 30 * mm, "Dove GLAUX AI fa davvero la differenza")
+    c.setFillColor(MUTED)
+    c.setFont("Helvetica", 9.5)
+    c.drawString(MX, H - 36 * mm, "Le stesse modalita, applicate a quattro contesti concreti.")
+
+    usecases = [
+        ("Negozi e attivita commerciali", CYAN, [
+            "Anti-rapina: rileva armi e minacce vocali durante una rapina, con verifica AI prima dell'allarme.",
+            "Anti-intrusione: sorveglia il locale fuori orario, con PIN e ritardo per evitare falsi allarmi.",
+            "Anti-incendio: monitora magazzino e retro, abbinato a qualsiasi altra modalita attiva.",
+        ]),
+        ("Abitazioni private", BLUE, [
+            "Anti-intrusione: presenza rilevata a sistema armato, con ritardo configurabile per disattivare.",
+            "Vigilanza anziani: utile se in casa vive un familiare anziano, per cadute o malori improvvisi.",
+            "Baby monitor: per la cameretta dei piu piccoli, quando i genitori sono in un'altra stanza.",
+        ]),
+        ("Strutture per anziani e assistenza domiciliare", CYAN, [
+            "Vigilanza anziani su piu stanze/camere: cadute, immobilita prolungata, richieste di aiuto.",
+            "Riduce i tempi di intervento del personale, con notifiche immediate su push, email o webhook.",
+            "Fusione audio-video: una richiesta di aiuto gridata rinforza il rilevamento visivo.",
+        ]),
+        ("Nidi, scuole dell'infanzia e baby-sitting", BLUE, [
+            "Baby monitor: conta i bambini presenti e segnala situazioni di pericolo in tempo reale.",
+            "Rileva vicinanza ad acqua o fiamme, cadute e uscite non sorvegliate dall'inquadratura.",
+            "Pianto rilevato acusticamente, anche quando l'educatore e momentaneamente altrove.",
+        ]),
+    ]
+
+    uc_h = 50 * mm
+    uc_top = H - 46 * mm
+    for i, (title, accent, body) in enumerate(usecases):
+        y = uc_top - i * (uc_h + 5 * mm)
+        c.setFillColor(SURFACE)
+        c.setStrokeColor(BORDER)
+        c.roundRect(MX, y - uc_h, W - 2 * MX, uc_h, 3 * mm, fill=1, stroke=1)
+        c.setFillColor(accent)
+        c.roundRect(MX, y - 2.2 * mm, 16 * mm, 2.2 * mm, 1.1 * mm, fill=1, stroke=0)
+        c.setFillColor(TEXT)
+        c.setFont("Helvetica-Bold", 12)
+        c.drawString(MX + 6 * mm, y - 9 * mm, title)
+        c.setFillColor(MUTED)
+        c.setFont("Helvetica", 8.6)
+        ly = y - 16 * mm
+        for line in body:
+            for ln in wrap_text("•  " + line, "Helvetica", 8.6, W - 2 * MX - 12 * mm):
+                c.drawString(MX + 6 * mm, ly, ln)
+                ly -= 4.6 * mm
+
+    footer(c, "3 / 4")
+    c.showPage()
+
+    # ---------------- PAGE 4 — Perche + Come funziona + Contatti ----------------
     bg_fill(c)
     c.setFillColor(CYAN)
     c.setFont("Helvetica-Bold", 9)
@@ -224,7 +305,7 @@ def make_pdf():
     c.drawString(MX, H - 30 * mm, "Progettato per essere affidabile, non solo intelligente")
 
     whys = [
-        ("Offline-first", "L'elaborazione video avviene in locale: nessun flusso continuo verso il cloud. La verifica AI esterna, se attivata, e opzionale e usata solo per confermare un allarme."),
+        ("Elaborazione in locale", "L'analisi video avviene direttamente sull'hardware installato, senza un flusso continuo verso terzi. La verifica con un'AI esterna, se attivata, e opzionale e usata solo per confermare un allarme."),
         ("Si auto-ritara", "Ogni modalita impara dai propri falsi positivi: se l'AI di verifica smentisce ripetutamente un allarme, la sensibilita si alza, e si abbassa quando l'ambiente si stabilizza."),
         ("Accelerato via GPU", "Analisi in tempo reale su hardware NVIDIA, con modelli YOLOv8 condivisi tra le modalita per non sprecare risorse."),
         ("Multi-camera, multi-modalita", "Fino a 10 camere, ciascuna con audio dedicato, gestite da un'unica dashboard con notifiche push, email e webhook."),
@@ -260,12 +341,13 @@ def make_pdf():
     c.drawString(MX, steps_top - 7*mm, "Dall'installazione al primo allarme")
 
     steps = [
-        "Collega le camere che hai gia (RTSP, webcam locale o stream cloud).",
+        "Integriamo le camere che hai gia (dopo un check tecnico di compatibilita) o ne installiamo di nuove.",
         "Scegli la modalita dalla dashboard, anche in combinazione con l'anti-incendio.",
         "Un rilevamento sospetto viene verificato prima di generare una notifica.",
         "Ricevi la notifica ovunque: push (ntfy), email o webhook, con immagini dell'evento.",
     ]
     sy = steps_top - 16*mm
+    step_text_width = W - 2*MX - 9*mm
     for i, s in enumerate(steps, start=1):
         c.setFillColor(BLUE)
         c.circle(MX + 3*mm, sy - 1.2*mm, 3.4*mm, fill=1, stroke=0)
@@ -274,8 +356,12 @@ def make_pdf():
         c.drawCentredString(MX + 3*mm, sy - 3.1*mm, str(i))
         c.setFillColor(TEXT)
         c.setFont("Helvetica", 9)
-        c.drawString(MX + 9*mm, sy - 2.6*mm, s)
-        sy -= 7.2*mm
+        wrapped = wrap_text(s, "Helvetica", 9, step_text_width)
+        ly = sy - 2.6*mm
+        for ln in wrapped:
+            c.drawString(MX + 9*mm, ly, ln)
+            ly -= 4.6*mm
+        sy -= max(7.2*mm, (len(wrapped) - 1) * 4.6*mm + 7.2*mm)
 
     # CTA band
     cta_h = 28 * mm
@@ -292,7 +378,7 @@ def make_pdf():
     c.setFont("Helvetica-Bold", 10)
     c.drawCentredString(W/2, cta_y + cta_h - 22*mm, "www.glauxai.it")
 
-    footer(c, "3 / 3")
+    footer(c, "4 / 4")
     c.showPage()
 
     c.save()
